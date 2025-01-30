@@ -1,0 +1,62 @@
+name: mekelle_city_app
+description: "A mobile app for the Mekelle City Information Center, providing centralized information and resources for residents and visitors."
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+# Dependencies specify other packages that your package needs in order to work.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Cupertino Icons for iOS-style icons
+  cupertino_icons: ^1.0.8
+
+  # HTTP package for API calls (if needed)
+  http: ^1.3.0
+
+  # Provider for state management
+  provider: ^6.0.0
+
+  # Intl for date formatting (used in the Event Calendar)
+  intl: ^0.20.2
+
+  # Url Launcher for opening emergency contacts
+  url_launcher: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Flutter Lints for recommended lint rules
+  flutter_lints: ^5.0.0
+
+# Flutter-specific configuration
+flutter:
+  # Material Icons font is included by default
+  uses-material-design: true
+
+  # To add assets (e.g., images, fonts), uncomment and update the following:
+  # assets:
+  #   - assets/images/logo.png
+  #   - assets/images/banner.jpg
+
+  # To add custom fonts, uncomment and update the following:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
