@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart'; 
+import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
@@ -8,15 +8,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data'; // For web file handling
 
-
-class PostBulletinScreen extends StatefulWidget {
+class PostDirectoryScreen extends StatefulWidget {
   @override
-  _PostBulletinScreenState createState() => _PostBulletinScreenState();
+  _PostDirectoryScreenState createState() => _PostDirectoryScreenState();
 }
 
-class _PostBulletinScreenState extends State<PostBulletinScreen> {
+class _PostDirectoryScreenState extends State<PostDirectoryScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _categoryController = TextEditingController();
   final _descriptionController = TextEditingController();
   File? _imageFile;
   Uint8List? _imageBytes;
@@ -40,82 +40,77 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
     }
   }
 
-  Future<void> _postBulletin() async {
-  final prefs = await SharedPreferences.getInstance();
-  String? token = prefs.getString('token');
+  Future<void> _postBusinessDirectory() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
 
-  if (token == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('You need to log in first.')),
-    );
-    return;
-  }
-
-  if (_formKey.currentState!.validate() && (_imageFile != null || _imageBytes != null)) {
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('http://localhost:3001/api/v1/communityBullet/'),
-    );
-
-    request.headers['Authorization'] = 'Bearer $token';
-    request.fields['name'] = _nameController.text;
-    request.fields['description'] = _descriptionController.text;
-
-    if (_imageFile != null) {
-      // For mobile
-      var fileStream = http.ByteStream(Stream.castFrom(_imageFile!.openRead()));
-      var fileLength = await _imageFile!.length();
-
-      var multipartFile = http.MultipartFile(
-        'picture',
-        fileStream,
-        fileLength,
-        filename: _fileName,
-        contentType: MediaType('image', 'jpeg'), // Manually set MIME type
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You need to log in first.')),
       );
-
-      request.files.add(multipartFile);
-    } else if (_imageBytes != null) {
-      // For web
-      var multipartFile = http.MultipartFile.fromBytes(
-        'picture',
-        _imageBytes!,
-        filename: _fileName,
-        contentType: MediaType('image', 'jpeg'), // Manually set MIME type
-      );
-
-      request.files.add(multipartFile);
+      return;
     }
 
-    // Debugging: Log the request fields and files
-    print("Request Fields: ${request.fields}");
-    print("Request Files: ${request.files}");
-
-    var response = await request.send();
-
-    if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Bulletin posted successfully!')),
+    if (_formKey.currentState!.validate() && (_imageFile != null || _imageBytes != null)) {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://localhost:3001/api/v1/localBusiness/'),
       );
-      Navigator.pop(context, 'posted');
+
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['name'] = _nameController.text;
+      request.fields['category'] = _categoryController.text;
+      request.fields['description'] = _descriptionController.text;
+
+      if (_imageFile != null) {
+        // For mobile
+        var fileStream = http.ByteStream(Stream.castFrom(_imageFile!.openRead()));
+        var fileLength = await _imageFile!.length();
+
+        var multipartFile = http.MultipartFile(
+          'picture',
+          fileStream,
+          fileLength,
+          filename: _fileName,
+          contentType: MediaType('image', 'jpeg'), // Manually set MIME type
+        );
+
+        request.files.add(multipartFile);
+      } else if (_imageBytes != null) {
+        // For web
+        var multipartFile = http.MultipartFile.fromBytes(
+          'picture',
+          _imageBytes!,
+          filename: _fileName,
+          contentType: MediaType('image', 'jpeg'), // Manually set MIME type
+        );
+
+        request.files.add(multipartFile);
+      }
+
+      var response = await request.send();
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Business posted successfully!')),
+        );
+        Navigator.pop(context, 'posted');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to post business.')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to post bulletin.')),
+        SnackBar(content: Text('Please fill all fields and select an image.')),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please fill all fields and select an image.')),
-    );
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Post a Bulletin')),
+      appBar: AppBar(title: Text('Post a Business')),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 20),
         child: Column(
@@ -127,13 +122,25 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                      labelText: 'Bulletin Name',
-                      prefixIcon: Icon(Icons.title),
+                      labelText: 'Business Name',
+                      prefixIcon: Icon(Icons.business),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    validator: (value) => value!.isEmpty ? 'Enter bulletin name' : null,
+                    validator: (value) => value!.isEmpty ? 'Enter business name' : null,
+                  ),
+                  SizedBox(height: 15),
+                  TextFormField(
+                    controller: _categoryController,
+                    decoration: InputDecoration(
+                      labelText: 'Category',
+                      prefixIcon: Icon(Icons.category),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    validator: (value) => value!.isEmpty ? 'Enter category' : null,
                   ),
                   SizedBox(height: 15),
                   TextFormField(
@@ -162,7 +169,7 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: _postBulletin,
+                      onPressed: _postBusinessDirectory,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
                         shape: RoundedRectangleBorder(
@@ -170,7 +177,7 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
                         ),
                       ),
                       child: Text(
-                        'Post Bulletin',
+                        'Post Business',
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),

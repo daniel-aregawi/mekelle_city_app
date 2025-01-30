@@ -67,7 +67,7 @@ Widget build(BuildContext context) {
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
       centerTitle: true,
-      backgroundColor: Colors.blueAccent,  // Matching color
+      backgroundColor: Colors.blueAccent, // Matching color
     ),
     body: bulletins.isEmpty
         ? Center(child: CircularProgressIndicator())
@@ -82,43 +82,85 @@ Widget build(BuildContext context) {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(12),
-                    leading: CircleAvatar(
-                      backgroundImage: bulletins[index]['picture'] != null
-                          ? NetworkImage(bulletins[index]['picture'])
-                          : AssetImage('assets/default_image.png')
-                              as ImageProvider,
-                      radius: 25,
-                    ),
-                    title: Text(
-                      bulletins[index]['name'],
-                      style: TextStyle(
-                        fontSize: 18, 
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent,  // Matching color
-                      ),
-                    ),
-                    subtitle: Column(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          bulletins[index]['description'],
-                          style: TextStyle(
-                            fontSize: 14, 
-                            color: Colors.grey[700],
+                        // Image (Square and Fixed Size)
+                        if (bulletins[index]['picture'] != null)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              'http://localhost:3001/${bulletins[index]['picture']}',
+                              width: 180, // Increased width
+                              height: 120, // Increased height
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          formatTime(bulletins[index]['createdAt']),
-                          style: TextStyle(
-                            fontSize: 12, 
-                            color: Colors.grey[500],
-                          ),
-                        ),
+                        SizedBox(width: 12),
+                        SizedBox(width: 12),
+
+                        // Text Content
+                        // Text Content and Buttons
+Expanded(
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Title
+      Text(
+        bulletins[index]['name'],
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.blueAccent,
+        ),
+      ),
+      SizedBox(height: 5),
+
+      // Description
+      Text(
+        bulletins[index]['description'],
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.grey[700],
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      SizedBox(height: 5),
+
+      // Timestamp
+      Text(
+        formatTime(bulletins[index]['createdAt']),
+        style: TextStyle(
+          fontSize: 12,
+          color: Colors.grey[500],
+        ),
+      ),
+
+      // Edit and Remove Buttons (for ADMIN)
+      if (userRole == 'ADMIN')
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.edit, color: Colors.blueAccent),
+              onPressed: () {
+                // _editBulletin(bulletins[index]);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                // Handle remove functionality
+                // _removeBulletin(bulletins[index]['id']);
+              },
+            ),
+          ],
+        ),
+    ],
+  ),
+),
                       ],
                     ),
                   ),
@@ -139,7 +181,7 @@ Widget build(BuildContext context) {
               }
             },
             child: Icon(Icons.add),
-            backgroundColor: Colors.blueAccent, 
+            backgroundColor: Colors.blueAccent,
           )
         : null,
   );
