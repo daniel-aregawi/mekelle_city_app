@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mekelle_city_app/screens/home_screen.dart';
 import 'package:mekelle_city_app/screens/login_screen.dart';
 import 'package:mekelle_city_app/screens/signup_screen.dart';
-import 'package:mekelle_city_app/screens/bulletin_screen.dart'; // Import screens
+import 'package:mekelle_city_app/screens/bulletin_screen.dart'; 
 import 'package:mekelle_city_app/screens/directory_screen.dart';
 import 'package:mekelle_city_app/screens/events_screen.dart';
 import 'package:mekelle_city_app/screens/emergency_screen.dart';

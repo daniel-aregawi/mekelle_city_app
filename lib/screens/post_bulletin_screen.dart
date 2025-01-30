@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data'; // For web file handling
+
 
 class PostBulletinScreen extends StatefulWidget {
   @override
@@ -13,45 +17,77 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  File? _image;
+  File? _imageFile;
+  Uint8List? _imageBytes;
+  String? _fileName;
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image, // Only allow image selection
+      withData: true, // Needed for web
+    );
+
+    if (result != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        _fileName = result.files.single.name;
+        if (kIsWeb) {
+          _imageBytes = result.files.single.bytes; // Web support
+        } else {
+          _imageFile = File(result.files.single.path!); // Mobile support
+        }
       });
     }
   }
 
   Future<void> _postBulletin() async {
-    if (_formKey.currentState!.validate() && _image != null) {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('http://localhost:3001/api/v1/communityBullet/'),
-      );
-      request.headers['Authorization'] = 'Bearer YOUR_BEARER_TOKEN';
-      request.fields['name'] = _nameController.text;
-      request.fields['description'] = _descriptionController.text;
-      request.files.add(await http.MultipartFile.fromPath('picture', _image!.path));
+  final prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
 
-      var response = await request.send();
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Bulletin posted successfully!')),
-        );
-        Navigator.pop(context);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to post bulletin.')),
-        );
-      }
+  if (token == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('You need to log in first.')),
+    );
+    return;
+  }
+
+  if (_formKey.currentState!.validate() && (_imageFile != null || _imageBytes != null)) {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('http://localhost:3001/api/v1/communityBullet/'),
+    );
+
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields['name'] = _nameController.text;
+    request.fields['description'] = _descriptionController.text;
+
+    if (_imageFile != null) {
+      request.files.add(await http.MultipartFile.fromPath('picture', _imageFile!.path));
+    } else if (_imageBytes != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        'picture',
+        _imageBytes!,
+        filename: _fileName,
+      ));
+    }
+
+    var response = await request.send();
+    if (response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Bulletin posted successfully!')),
+      );
+      Navigator.pop(context, 'posted');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields and select an image.')),
+        SnackBar(content: Text('Failed to post bulletin.')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please fill all fields and select an image.')),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +125,9 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
                     validator: (value) => value!.isEmpty ? 'Enter a description' : null,
                   ),
                   SizedBox(height: 15),
-                  _image == null
-                      ? Text('No image selected')
-                      : Image.file(_image!, height: 100),
+                  _imageBytes != null || _imageFile != null
+                      ? Image.memory(_imageBytes ?? _imageFile!.readAsBytesSync(), height: 100)
+                      : Text('No image selected'),
                   SizedBox(height: 10),
                   ElevatedButton.icon(
                     onPressed: _pickImage,
