@@ -15,6 +15,16 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Mekelle City Information Center'),
         centerTitle: true,
+        actions: [
+          TextButton(
+            onPressed: () => _logout(context),
+            child: Text(
+              'Logout',
+              style: TextStyle(
+                  color: Colors.red), // Adjust the text color as needed
+            ),
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -40,11 +50,15 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            _buildDrawerItem(context, Icons.message, 'Community Bulletin', '/bulletin'),
-            _buildDrawerItem(context, Icons.business, 'Local Business Directory', '/directory'),
+            _buildDrawerItem(
+                context, Icons.message, 'Community Bulletin', '/bulletin'),
+            _buildDrawerItem(context, Icons.business,
+                'Local Business Directory', '/directory'),
             _buildDrawerItem(context, Icons.event, 'Event Calendar', '/events'),
-            _buildDrawerItem(context, Icons.phone, 'Emergency Contacts', '/emergency'),
-            _buildDrawerItem(context, Icons.miscellaneous_services, 'City Services', '/services'),
+            _buildDrawerItem(
+                context, Icons.phone, 'Emergency Contacts', '/emergency'),
+            _buildDrawerItem(context, Icons.miscellaneous_services,
+                'City Services', '/services'),
             Divider(),
             ListTile(
               leading: Icon(Icons.logout, color: Colors.red),
@@ -62,18 +76,24 @@ class HomeScreen extends StatelessWidget {
           mainAxisSpacing: 10,
           childAspectRatio: 1.2,
           children: [
-            _buildFeatureCard(context, 'Community Bulletin', '/bulletin', Icons.message),
-            _buildFeatureCard(context, 'Local Business Directory', '/directory', Icons.business),
-            _buildFeatureCard(context, 'Event Calendar', '/events', Icons.event),
-            _buildFeatureCard(context, 'Emergency Contacts', '/emergency', Icons.phone),
-            _buildFeatureCard(context, 'City Services', '/services', Icons.miscellaneous_services),
+            _buildFeatureCard(
+                context, 'Community Bulletin', '/bulletin', Icons.message),
+            _buildFeatureCard(context, 'Local Business Directory', '/directory',
+                Icons.business),
+            _buildFeatureCard(
+                context, 'Event Calendar', '/events', Icons.event),
+            _buildFeatureCard(
+                context, 'Emergency Contacts', '/emergency', Icons.phone),
+            _buildFeatureCard(context, 'City Services', '/services',
+                Icons.miscellaneous_services),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDrawerItem(BuildContext context, IconData icon, String title, String route) {
+  Widget _buildDrawerItem(
+      BuildContext context, IconData icon, String title, String route) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
@@ -84,7 +104,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard(BuildContext context, String title, String route, IconData icon) {
+  Widget _buildFeatureCard(
+      BuildContext context, String title, String route, IconData icon) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, route),
       child: Card(
@@ -95,7 +116,9 @@ class HomeScreen extends StatelessWidget {
           children: [
             Icon(icon, size: 40, color: Colors.blueAccent),
             SizedBox(height: 10),
-            Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(title,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
       ),

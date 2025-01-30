@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
         '/emergency': (context) => EmergencyScreen(), // Add route for EmergencyScreen
         '/services': (context) => ServicesScreen(), // Add route for ServicesScreen
       },
+      debugShowCheckedModeBanner: false,
     );
   }
 }
