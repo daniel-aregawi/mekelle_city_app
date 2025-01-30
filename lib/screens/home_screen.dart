@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
             child: Text(
               'Logout',
               style: TextStyle(
-                  color: Colors.red), // Adjust the text color as needed
+                  color: Colors.red), 
             ),
           ),
         ],
