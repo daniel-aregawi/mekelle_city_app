@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:mekelle_city_app/screens/home_screen.dart';
-import 'package:mekelle_city_app/screens/bulletin_screen.dart';
-import 'package:mekelle_city_app/screens/directory_screen.dart';
-import 'package:mekelle_city_app/screens/events_screen.dart';
-import 'package:mekelle_city_app/screens/emergency_screen.dart';
-import 'package:mekelle_city_app/screens/services_screen.dart';
-import 'package:mekelle_city_app/screens/signup_screen.dart';
 import 'package:mekelle_city_app/screens/login_screen.dart';
+import 'package:mekelle_city_app/screens/signup_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
 class MyApp extends StatelessWidget {
+  final bool isLoggedIn;
+  MyApp({required this.isLoggedIn});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,16 +23,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
-routes: {
-  '/bulletin': (context) => BulletinScreen(),
-  '/directory': (context) => DirectoryScreen(),
-  '/events': (context) => EventsScreen(),
-  '/emergency': (context) => EmergencyScreen(),
-  '/services': (context) => ServicesScreen(),
-  '/signup': (context) => SignupScreen(),
-  '/login': (context) => LoginScreen(), 
-},
+      home: isLoggedIn ? HomeScreen() : LoginScreen(),
+      routes: {
+        '/home': (context) => HomeScreen(),
+        '/signup': (context) => SignupScreen(),
+        '/login': (context) => LoginScreen(),
+      },
     );
   }
 }
