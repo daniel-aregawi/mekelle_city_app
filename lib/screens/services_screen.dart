@@ -48,63 +48,105 @@ class _ServicesScreenState extends State<ServicesScreen> {
     }
   }
 
+  // Delete a service
+  Future<void> _deleteService(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final response = await http.delete(
+      Uri.parse('http://localhost:3001/api/v1/cityService/$id'),
+      headers: {
+        'Authorization': token != null ? 'Bearer $token' : '',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Service deleted successfully.')),
+      );
+      await fetchServices(); // Refresh the list
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete service.')),
+      );
+    }
+  }
+
   // Create the collapsible widget for each service
   Widget _buildServiceCard(Map service) {
-    return Card(
-      elevation: 2,
-      margin: EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+  return Card(
+    elevation: 2,
+    margin: EdgeInsets.symmetric(vertical: 8),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: ExpansionTile(
+      title: Text(
+        service['name'],
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      child: ExpansionTile(
-        title: Text(
-          service['name'],
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: Icon(
-          Icons.arrow_drop_down,
-          size: 24,
-          color: Colors.blue.shade800,
-        ),
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (service['picture'] != null)
-                  Image.network(
-                    'http://localhost:3001/${service['picture']}',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
-                SizedBox(height: 8),
-                Text(
-                  'Description:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+      leading: Icon(
+        Icons.arrow_drop_down,
+        size: 24,
+        color: Colors.blue.shade800,
+      ),
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch to fill the width
+            children: [
+              // Center the image and text
+              Center(
+                child: Column(
+                  children: [
+                    if (service['picture'] != null)
+                      Image.network(
+                        'http://localhost:3001/${service['picture']}',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Description:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      service['description'] ?? 'No description available',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Align the delete button to the right
+              if (userRole == 'ADMIN')
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      _deleteService(service['_id']);
+                    },
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  service['description'] ?? 'No description available',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
