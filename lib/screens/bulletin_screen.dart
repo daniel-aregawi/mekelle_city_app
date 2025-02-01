@@ -67,7 +67,6 @@ class _BulletinScreenState extends State<BulletinScreen> {
   );
 
   if (response.statusCode == 200) {
-    // Show a success message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Bulletin deleted successfully.')),
     );
