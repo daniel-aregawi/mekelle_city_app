@@ -62,7 +62,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     );
 
     if (response.statusCode == 200) {
-      // Remove the deleted business from the list
       setState(() {
         businesses.removeWhere((business) => business['_id'] == id);
       });
@@ -124,7 +123,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                         ),
                       ),
                       subtitle: Text(
-                        businesses[index]['category'], // Display the category
+                        businesses[index]['category'], 
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[700],
@@ -166,7 +165,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                               ),
                               SizedBox(height: 8),
 
-                              // Timestamp
                               Text(
                                 formatTime(businesses[index]['createdAt']),
                                 style: TextStyle(
@@ -185,11 +183,14 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
             ),
       floatingActionButton: userRole == 'ADMIN'
           ? FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => PostDirectoryScreen()),
                 );
+                if (result == 'posted') {
+                  fetchBusinesses();
+                }
               },
               child: Icon(Icons.add),
               backgroundColor: Colors.blueAccent,

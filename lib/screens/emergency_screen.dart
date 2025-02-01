@@ -3,8 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'add_emergency_screen.dart'; // For adding emergencies
-
+import 'add_emergency_screen.dart'; 
 class EmergencyScreen extends StatefulWidget {
   @override
   _EmergencyScreenState createState() => _EmergencyScreenState();
@@ -33,7 +32,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     final token = prefs.getString('token');
 
     final response = await http.get(
-      Uri.parse('http://localhost:3001/api/v1/emergency/'), // Adjust the API endpoint
+      Uri.parse('http://localhost:3001/api/v1/emergency/'),
       headers: {
         'Authorization': token != null ? 'Bearer $token' : '',
       },
@@ -60,7 +59,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     final token = prefs.getString('token');
 
     final response = await http.delete(
-      Uri.parse('http://localhost:3001/api/v1/emergency/$id'), // Adjust the API endpoint
+      Uri.parse('http://localhost:3001/api/v1/emergency/$id'), 
       headers: {
         'Authorization': token != null ? 'Bearer $token' : '',
       },
@@ -118,7 +117,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                                 ),
                                 onPressed: () => launch('tel:${emergencies[index]['number']}'),
                               ),
-                              SizedBox(width: 10), // Add some spacing between the call button and the text
+                              SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +187,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 );
 
                 if (result == 'posted') {
-                  fetchEmergencies(); // Refresh the list after posting
+                  fetchEmergencies(); 
                 }
               },
               child: Icon(Icons.add),

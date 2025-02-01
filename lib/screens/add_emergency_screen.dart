@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // Add this import
+import 'dart:convert'; 
 
 class AddEmergencyScreen extends StatefulWidget {
   @override
@@ -27,7 +27,7 @@ class _AddEmergencyScreenState extends State<AddEmergencyScreen> {
 
     if (_formKey.currentState!.validate()) {
       final response = await http.post(
-        Uri.parse('http://localhost:3001/api/v1/emergency/'), // Adjust the API endpoint
+        Uri.parse('http://localhost:3001/api/v1/emergency/'), 
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ class _AddEmergencyScreenState extends State<AddEmergencyScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Emergency contact added successfully!')),
         );
-        Navigator.pop(context, 'posted'); // Close the screen and return to the list
+        Navigator.pop(context, 'posted'); 
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add emergency contact.')),

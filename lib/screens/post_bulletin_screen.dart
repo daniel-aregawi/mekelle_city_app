@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data'; // For web file handling
+import 'dart:typed_data'; 
 
 
 class PostBulletinScreen extends StatefulWidget {
@@ -24,17 +24,17 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
 
   Future<void> _pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image, // Only allow image selection
-      withData: true, // Needed for web
+      type: FileType.image, 
+      withData: true, 
     );
 
     if (result != null) {
       setState(() {
         _fileName = result.files.single.name;
         if (kIsWeb) {
-          _imageBytes = result.files.single.bytes; // Web support
+          _imageBytes = result.files.single.bytes; 
         } else {
-          _imageFile = File(result.files.single.path!); // Mobile support
+          _imageFile = File(result.files.single.path!); 
         }
       });
     }
@@ -62,7 +62,6 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
     request.fields['description'] = _descriptionController.text;
 
     if (_imageFile != null) {
-      // For mobile
       var fileStream = http.ByteStream(Stream.castFrom(_imageFile!.openRead()));
       var fileLength = await _imageFile!.length();
 
@@ -71,7 +70,7 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
         fileStream,
         fileLength,
         filename: _fileName,
-        contentType: MediaType('image', 'jpeg'), // Manually set MIME type
+        contentType: MediaType('image', 'jpeg'), 
       );
 
       request.files.add(multipartFile);
@@ -81,13 +80,12 @@ class _PostBulletinScreenState extends State<PostBulletinScreen> {
         'picture',
         _imageBytes!,
         filename: _fileName,
-        contentType: MediaType('image', 'jpeg'), // Manually set MIME type
+        contentType: MediaType('image', 'jpeg'), 
       );
 
       request.files.add(multipartFile);
     }
 
-    // Debugging: Log the request fields and files
     print("Request Fields: ${request.fields}");
     print("Request Files: ${request.files}");
 

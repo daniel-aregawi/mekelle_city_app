@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:timeago/timeago.dart' as timeago;
-import 'post_event_screen.dart'; // You'll need to create this screen for adding events
+import 'post_event_screen.dart'; 
 
 class EventsScreen extends StatefulWidget {
   @override
@@ -33,7 +33,7 @@ class _EventsScreenState extends State<EventsScreen> {
     final token = prefs.getString('token');
 
     final response = await http.get(
-      Uri.parse('http://localhost:3001/api/v1/event/'), // Adjust the API endpoint
+      Uri.parse('http://localhost:3001/api/v1/event/'), 
       headers: {
         'Authorization': token != null ? 'Bearer $token' : '',
       },
@@ -60,19 +60,18 @@ class _EventsScreenState extends State<EventsScreen> {
     final token = prefs.getString('token');
 
     final response = await http.delete(
-      Uri.parse('http://localhost:3001/api/v1/event/$id'), // Adjust the API endpoint
+      Uri.parse('http://localhost:3001/api/v1/event/$id'), 
       headers: {
         'Authorization': token != null ? 'Bearer $token' : '',
       },
     );
 
     if (response.statusCode == 200) {
-      // Show a success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Event deleted successfully.')),
       );
 
-      await fetchEvents(); // Refresh the list
+      await fetchEvents(); 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to delete event.')),
@@ -151,7 +150,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                 ),
                                 SizedBox(height: 5),
                                 Text(
-                                  'Date: ${formatTime(events[index]['date'])}', // Display event date
+                                  'Date: ${formatTime(events[index]['date'])}', 
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey[500],
@@ -189,11 +188,11 @@ class _EventsScreenState extends State<EventsScreen> {
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PostEventScreen()), // Create this screen
+                  MaterialPageRoute(builder: (context) => PostEventScreen()), 
                 );
 
                 if (result == 'posted') {
-                  fetchEvents(); // Refresh the list after posting
+                  fetchEvents(); 
                 }
               },
               child: Icon(Icons.add),
